@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .cart-table th, .cart-table td {
+            padding: 15px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .cart-table th {
+            background-color: #f2f2f2;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .add-item-btn {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Shopping Cart</h1>
+    
+    <!-- Button to add new item to cart -->
+    <button class="button add-item-btn" onclick="addItem()">Add Item</button>
+
+    <table class="cart-table" id="cart-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Initial products will go here -->
+        </tbody>
+    </table>
+
+    <div class="total">
+        Total: $<span id="cart-total">0.00</span>
+    </div>
+
+    <button class="button">Proceed to Checkout</button>
+</div>
+
+<script>
+    let productCount = 0; // To track how many products are added
+
+    function addItem() {
+        productCount++;
+        
+        const table = document.getElementById("cart-table").getElementsByTagName('tbody')[0];
+
+        // Create a new row
+        const newRow = table.insertRow();
+
+        // Product name cell
+        const productCell = newRow.insertCell(0);
+        productCell.innerHTML = `Product ${productCount}`;
+
+        // Price cell
+        const priceCell = newRow.insertCell(1);
+        priceCell.innerHTML = `$${(Math.random() * 20 + 5).toFixed(2)}`; // Random price between $5 and $25
+
+        // Quantity cell
+        const quantityCell = newRow.insertCell(2);
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "number";
+        quantityInput.value = 1;
+        quantityInput.min = 1;
+        quantityInput.classList.add("quantity");
+        quantityCell.appendChild(quantityInput);
+
+        // Total price cell
+        const totalCell = newRow.insertCell(3);
+        totalCell.classList.add("product-total");
+        totalCell.innerHTML = priceCell.innerHTML;
+
+        // Action cell (remove button)
+        const actionCell = newRow.insertCell(4);
+        const removeButton = document.createElement("button");
+        removeButton.innerHTML = "Remove";
+        removeButton.classList.add("remove-button");
+        actionCell.appendChild(removeButton);
+
+        // Update the cart when quantity changes
+        quantityInput.addEventListener('input', updateTotal);
+
+        // Remove item when the "Remove" button is clicked
+        removeButton.addEventListener('click', () => {
+            newRow.remove();
+            updateTotal();
+        });
+
+        // Initial update of the total
+        updateTotal();
+    }
+
+    function updateTotal() {
+        const quantityInputs = document.querySelectorAll('.quantity');
+        const productTotals = document.querySelectorAll('.product-total');
+        const cartTotalElement = document.getElementById('cart-total');
+        let cartTotal = 0;
+
+        productTotals.forEach((total, index) => {
+            const price = parseFloat(total.previousElementSibling.textContent.substring(1)); // Remove $ sign
+            const quantity = parseInt(quantityInputs[index].value);
+            const totalPrice = price * quantity;
+            total.textContent = '$' + totalPrice.toFixed(2);
+            cartTotal += totalPrice;
+        });
+
+        cartTotalElement.textContent = cartTotal.toFixed(2);
+    }
+</script>
+
+</body>
+</html>
+
